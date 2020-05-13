@@ -7,6 +7,17 @@ from pymorphy2 import MorphAnalyzer
 places = {}
 
 
+def from_e_to_game(choice):
+    res = False
+    if choice in ["камень", "ножницы", "бумага"]:
+        return choice
+    elif choice[0] == u'\U00002702':
+        res = "ножницы"
+    elif choice == u'\U0001F48E':
+        res = "камень"
+    elif choice == u'\U0001F4F0':
+        res = "бумага"
+    return res
 
 
 def jokes():
@@ -18,7 +29,6 @@ def jokes():
 
 def game(choice):
     computer = r.choice(["камень", "ножницы", "бумага"])
-    choice = choice.lower()
 
     if computer == choice:
         res = "Ничья! Я тоже выбрал " + e.game[computer]
@@ -48,3 +58,10 @@ def place(message):
                                         "Для питона как раз!)"])
         return places[message]
     return False
+
+
+def send_mem():
+    n = r.randint(1, 1011)
+    way = 'memes/mem ({}).jpg'.format(n)
+    photo = open(way, 'rb')
+    return photo

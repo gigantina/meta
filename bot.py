@@ -9,48 +9,57 @@ TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 bot = telebot.TeleBot(TOKEN)
 users = {}
 
+
 @bot.message_handler(commands=['start'])
 def welcome(message):
     global users
     users[message.from_user.id] = {}
     users[message.from_user.id]['game'] = False
 
-
     bot.send_message(message.chat.id,
-                     "Привет, {}! Я Длиннохвостик - веселый питон, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем или оценить вашу фотографию. А также много чегоеще, я надеюсь, что вам со мной будет интересно)".format(
-                         message.from_user.first_name))
+                     "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
+                         message.from_user.first_name, e.snake, e.celebrate))
+
 
 @bot.message_handler(content_types=['text'])
 def dialog(message):
     global users
-    if ("шутк" in str(message.text).lower() or "шуте" in str(
-            message.text).lower() or "прикол" in str(message.text).lower()) and ("прикольно" not in str(message.text).lower()):
+    chat = message.chat.id
+    us = message.from_user.id
+    m = str(message.text).lower()
+
+    if ("шутк" in m) or ("шуте" in m) or ("прикол" in m) and ("прикольно" not in m):
         joke = f.jokes()
-        bot.send_message(message.chat.id, joke)
-    elif 'камень-ножницы-бумаг' in str(message.text).lower():
-        if users[message.from_user.id]['game']:
-            bot.send_message(message.chat.id, "Мы уже играем! Скорее, выбирай!")
-        users[message.from_user.id]['game'] = True
-        bot.send_message(message.chat.id, 'Выбирай! Если больше не хочешь играть, скажи "нет" ' + e.smile)
+        bot.send_message(chat, joke)
 
-    elif users[message.from_user.id]['game'] and message.text.lower() in ["камень", "ножницы", "бумага"]:
-        res = f.game(message.text)
-        bot.send_message(message.chat.id, res + '\n' + "Сыграем еще?)")
+    elif 'мем' in m or '2014' in m or 'смеш' in m:
+        mem = f.send_mem()
+        bot.send_photo(chat, mem)
+    elif 'камень-ножницы-бумаг' in m:
+        if users[us]['game']:
+            bot.send_message(chat, "Мы уже играем! Скорее, выбирай!")
+        users[us]['game'] = True
+        bot.send_message(chat, 'Выбирай! Если больше не хочешь играть, скажи "нет" ' + e.smile)
 
-    elif users[message.from_user.id]['game'] and message.text.lower() == "да":
-        users[message.from_user.id]['game'] = True
+    elif users[us]['game'] and f.from_e_to_game(m):
+        res = f.game(f.from_e_to_game(m))
+        bot.send_message(chat, res + '\n' + "Сыграем еще?)")
 
-    elif users[message.from_user.id]['game'] and message.text.lower() == "нет":
-        users[message.from_user.id]['game'] = False
+    elif users[us]['game'] and m == "да":
+        users[us]['game'] = True
 
-    elif users[message.from_user.id]['game']:
-        bot.send_message(message.chat.id, "Ты ввел что-то неправильно, повтори пожалуйста!")
+    elif users[us]['game'] and m == "нет":
+        users[us]['game'] = False
 
-    elif f.place(message.text):
-        bot.send_message(message.from_user.id, f.place(message.text))
+    elif users[us]['game']:
+        bot.send_message(chat, "Ты ввел что-то неправильно, повтори пожалуйста!")
+
+    elif f.place(m):
+        bot.send_message(us, f.place(m))
 
     else:
-        bot.send_message(message.chat.id, "a)")
+
+        bot.send_message(chat, "a)")
 
 
 bot.polling(none_stop=True, interval=0)
