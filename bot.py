@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import telebot
-
+import emoji as e
 import functions as f
 
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
 users = {}
-
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
@@ -32,7 +31,7 @@ def dialog(message):
         if users[message.from_user.id]['game']:
             bot.send_message(message.chat.id, "Мы уже играем! Скорее, выбирай!")
         users[message.from_user.id]['game'] = True
-        bot.send_message(message.chat.id, "Выбирай!")
+        bot.send_message(message.chat.id, 'Выбирай! Если больше не хочешь играть, скажи "нет" ' + e.smile)
 
     elif users[message.from_user.id]['game'] and message.text.lower() in ["камень", "ножницы", "бумага"]:
         res = f.game(message.text)
@@ -46,6 +45,10 @@ def dialog(message):
 
     elif users[message.from_user.id]['game']:
         bot.send_message(message.chat.id, "Ты ввел что-то неправильно, повтори пожалуйста!")
+
+    elif f.place(message.text):
+        bot.send_message(message.from_user.id, f.place(message.text))
+
     else:
         bot.send_message(message.chat.id, "a)")
 
