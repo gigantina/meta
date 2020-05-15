@@ -3,18 +3,15 @@
 import telebot
 import emoji as e
 import functions as f
+import data
 
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
-users = {}
-
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
-    global users
-    users[message.from_user.id] = {}
-    users[message.from_user.id]['game'] = False
+    data.new(message.from_user.id)
 
     bot.send_message(message.chat.id,
                      "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
@@ -23,7 +20,6 @@ def welcome(message):
 
 @bot.message_handler(content_types=['text'])
 def dialog(message):
-    global users
     chat = message.chat.id
     us = message.from_user.id
     m = str(message.text).lower()
@@ -36,22 +32,22 @@ def dialog(message):
         mem = f.send_mem()
         bot.send_photo(chat, mem)
     elif 'камень-ножницы-бумаг' in m:
-        if users[us]['game']:
+        if data.get_game(us):
             bot.send_message(chat, "Мы уже играем! Скорее, выбирай!")
-        users[us]['game'] = True
+        data.game(us, 1)
         bot.send_message(chat, 'Выбирай! Если больше не хочешь играть, скажи "нет" ' + e.smile)
 
-    elif users[us]['game'] and f.from_e_to_game(m):
+    elif data.get_game(us) and f.from_e_to_game(m):
         res = f.game(f.from_e_to_game(m))
         bot.send_message(chat, res + '\n' + "Сыграем еще?)")
 
-    elif users[us]['game'] and m == "да":
-        users[us]['game'] = True
+    elif data.get_game(us) and m == "да":
+        data.game(us, 1)
 
-    elif users[us]['game'] and m == "нет":
-        users[us]['game'] = False
+    elif data.get_game(us) and m == "нет":
+        data.game(us, 0)
 
-    elif users[us]['game']:
+    elif data.get_game(us):
         bot.send_message(chat, "Ты ввел что-то неправильно, повтори пожалуйста!")
 
     elif f.place(m):
