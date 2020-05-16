@@ -65,3 +65,8 @@ def send_mem():
     way = 'memes/mem ({}).jpg'.format(n)
     photo = open(way, 'rb')
     return photo
+
+
+def time():
+    res = f"{r.randint(0, 24)}-{r.randint(0, 60)}-{r.randint(0, 60)}"
+    return res
