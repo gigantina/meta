@@ -3,35 +3,35 @@
 import threading
 import sqlite3
 
-global db
-global sql
+global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
 sql = db.cursor()
+lock = threading.lock
 
 
-lock = threading.Lock()
-lock.acquire(True)
+def create():
+    lock.acquire(True)
 
-sql.execute("""CREATE TABLE IF NOT EXISTS users (
-        id INT,
-        chat INT,
-        game INT
-        )""")
-db.commit()
-lock.release()
+    sql.execute("""CREATE TABLE IF NOT EXISTS users (
+            id INT,
+            chat INT,
+            game INT,
+            feel INT,
+            )""")
+    db.commit()
+    lock.release()
+
 
 def new(user_id, chat_id):
-    lock = threading.Lock()
     lock.acquire(True)
     sql.execute("SELECT id FROM users")
-    if sql.fetchone() == None:
-        sql.execute(f"INSERT INTO users VALUES (?, ?, ?)", (user_id, chat_id, 0))
+    if not sql.fetchone():
+        sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?)", (user_id, chat_id, 0, 0))
         db.commit()
     lock.release()
 
 
 def game(user_id, isGame):
-    lock = threading.Lock()
     lock.acquire(True)
     sql.execute(f"UPDATE users SET game = {isGame} WHERE id = {user_id}")
     db.commit()
@@ -39,16 +39,29 @@ def game(user_id, isGame):
 
 
 def get_game(user_id):
-    lock = threading.Lock()
     lock.acquire(True)
     sql.execute(f"SELECT game FROM users WHERE id = {user_id}")
     res = sql.fetchone()
-    print(res)
     lock.release()
     return res[0]
 
+
+def feel(chat_id, isFeel):
+    lock.acquire(True)
+    sql.execute(f"UPDATE users SET feel = {isFeel} WHERE chat = {chat_id}")
+    db.commit()
+    lock.release()
+
+
+def get_feel(user_id):
+    lock.acquire(True)
+    sql.execute(f"SELECT feel FROM users WHERE id = {user_id}")
+    res = sql.fetchone()
+    lock.release()
+    return res[0]
+
+
 def get_chats():
-    lock = threading.Lock()
     lock.acquire(True)
     sql.execute(f"SELECT chat FROM users")
     res = [i for i in sql.fetchall()]
