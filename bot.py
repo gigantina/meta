@@ -11,6 +11,7 @@ global feel
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
+data.create()
 
 
 def planning():
@@ -30,7 +31,7 @@ def planning():
 
 t = Thread(target=planning)
 t.start()
-feel_list = []
+
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
@@ -39,6 +40,11 @@ def welcome(message):
     bot.send_message(message.chat.id,
                      "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
                          message.from_user.first_name, e.snake, e.celebrate))
+
+
+@bot.message_handler(commands=['note'])
+def diary_note(message):
+    data.feel(message.from_user.id, 1)
 
 
 @bot.message_handler(content_types=['text'])
@@ -71,7 +77,15 @@ def dialog(message):
         bot.send_message(chat, "Ты ввел что-то неправильно, повтори пожалуйста. Если надоело, просто напиши 'хватит)'")
 
     elif data.get_feel(us) and m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
-        bot.send_message('Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
+        bot.send_message(chat, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
+        data.feel(us, 0)
+        data.situation(us, 1)
+
+    elif data.get_situation(us) and len(m) > 6:
+        data.situation(us, 0)
+        # сюда еще вставим функцию, делает запись о том, что чел испытал и когда (создадим еще одну базу данных)
+        bot.send_message(chat, 'Отлично, ты сделал запись в нашем дневнике! Ты можешь сделать еще одну, написав "/note"')
+
     elif f.place(m):
         bot.send_message(us, f.place(m))
 
