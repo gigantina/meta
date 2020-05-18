@@ -14,7 +14,6 @@ def create():
 
     sql.execute("""CREATE TABLE IF NOT EXISTS users (
             id INT,
-            chat INT,
             game INT,
             feel INT,
             situation INT
@@ -23,11 +22,11 @@ def create():
     lock.release()
 
 
-def new(user_id, chat_id):
+def new(user_id):
     lock.acquire(True)
     sql.execute("SELECT id FROM users")
     if not sql.fetchone():
-        sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?, ?)", (user_id, chat_id, 0, 0, 0))
+        sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?)", (user_id, 0, 0, 0))
         db.commit()
     lock.release()
 
@@ -47,9 +46,9 @@ def get_game(user_id):
     return res[0]
 
 
-def feel(chat_id, isFeel):
+def feel(user_id, isFeel):
     lock.acquire(True)
-    sql.execute(f"UPDATE users SET feel = {isFeel} WHERE chat = {chat_id}")
+    sql.execute(f"UPDATE users SET feel = {isFeel} WHERE chat = {user_id}")
     db.commit()
     lock.release()
 
