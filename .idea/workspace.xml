@@ -22,8 +22,10 @@
     <list default="true" id="b06d7887-4fd6-46d3-a76a-2d8deddec15a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.db" beforeDir="false" afterPath="$PROJECT_DIR$/data.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-emotions.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diary.py" beforeDir="false" afterPath="$PROJECT_DIR$/diary.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +117,8 @@
       <option name="presentableId" value="Default" />
       <updated>1589748210732</updated>
       <workItem from="1589748214640" duration="1003000" />
-      <workItem from="1589823076840" duration="13061000" />
+      <workItem from="1589823076840" duration="13117000" />
+      <workItem from="1589892715849" duration="5247000" />
     </task>
     <servers />
   </component>
@@ -135,38 +138,38 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1589834598835">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1589917074778">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1589834598835" />
-    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1589834598835">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1589917074778" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1589917074778">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1589834598835" />
-    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1589834598835">
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1589917074778" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1589917074777">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1589834598835" />
-    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1589834598835">
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1589917074777" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1589917074778">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1589834598835" />
-    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1589832566312">
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1589917074778" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1589836743075">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1589832566312" />
-    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1589832566312">
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1589836743075" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1589836743075">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1589832566312" />
-    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1589832566312">
+    <state width="1877" height="348" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1589836743075" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1589836743075">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1589832566312" />
-    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1589832566312">
+    <state width="1877" height="348" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1589836743075" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1589836743075">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1877" height="348" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1589832566312" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1589836743075" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -181,6 +184,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/meta$diary.coverage" NAME="diary Coverage Results" MODIFIED="1589832100433" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/meta$bot.coverage" NAME="bot Coverage Results" MODIFIED="1589834598827" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/meta$bot.coverage" NAME="bot Coverage Results" MODIFIED="1589896760504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

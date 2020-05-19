@@ -42,7 +42,6 @@ t.start()
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
-    diary.new(message.from_user.id)
     data.new(message.from_user.id)
     bot.send_message(message.chat.id,
                      "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
@@ -63,14 +62,17 @@ def diary_week(message):
         for day in week:
             day_of_week = day[0]
             bot.send_message(message.from_user.id, f"Итак, в {day_of_week} твои записи:")
-            for i in range(1, len(day) - 1):
-                sit, emotion = str(day[i][0]), str(day[i][1])
+            print(day[1])
+            for i in range(0, len(day[1])):
+                emotion, sit = str(day[1][i - 1][0]), str(day[1][i - 1][1])
+                print(sit, emotion)
                 # advice = diary.get_advice(message.from_user.id)
                 string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
                 res += string
     else:
-        bot.send_message(message.from_user.id,
-                         'О, ты еще не сделал записей на этой неделе! Тф ысегда можешь это сделать командой "/note"')
+        res = 'О, ты еще не сделал записей на этой неделе! Тф ысегда можешь это сделать командой "/note"'
+
+    bot.send_message(message.from_user.id, res)
 
 
 @bot.message_handler(content_types=['text'])
@@ -104,6 +106,7 @@ def dialog(message):
 
     elif data.get_feel(us) and m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
         bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
+        diary.new_emotion(us, m)
         data.feel(us, 0)
         data.situation(us, 1)
 
