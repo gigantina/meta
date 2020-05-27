@@ -46,6 +46,7 @@ def welcome(message):
     bot.send_message(message.chat.id,
                      "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
                          message.from_user.first_name, e.snake, e.celebrate))
+    bot.send_message(message.chat.id, str(datetime.now(tz=None)))
     print(message.from_user.id)
 
 
