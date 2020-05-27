@@ -4,6 +4,7 @@ import random as r
 import emoji as e
 from pymorphy2 import MorphAnalyzer
 from datetime import datetime, timedelta
+import data
 
 places = {}
 
@@ -13,6 +14,12 @@ def get_time(hour):
     current = now + timedelta(hours=hour)
     res = str(current.strftime('%H-%M-%S'))
     return res
+
+0
+def day(user_id):
+    print('s')
+    day = (datetime.today() + timedelta(hours=data.get_utc(user_id))).isoweekday()
+    return day
 
 
 def from_e_to_game(choice):

@@ -2,6 +2,8 @@
 
 import threading
 import sqlite3
+import diary
+import functions as f
 
 global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
@@ -68,10 +70,11 @@ def get_situation(user_id, islock=True):
     sql.execute(f"SELECT situation FROM users WHERE id = {user_id}")
     res = sql.fetchone()
     lock.release()
+    print('sdfsdf', res)
     return res[0]
 
 
-def get_chats(islock=True):
+def get_chats(islock=True):  # возвращает список id всех пользователей
     if islock:
         lock.acquire(True)
     sql.execute(f"SELECT id FROM users")
@@ -79,8 +82,6 @@ def get_chats(islock=True):
     lock.release()
     return res
 
-
-# get_chats()
 
 def get_days(user_id, islock=True):
     if islock:
@@ -101,7 +102,7 @@ def new_day(user_id, islock=True):
         lock.release()
 
 
-def utc(user_id, time, islock=True): # установка часового пояса
+def utc(user_id, time, islock=True):  # установка часового пояса
     if islock:
         lock.acquire(True)
     sql.execute(f"UPDATE users SET utc = ? WHERE id = ?", (time, user_id))

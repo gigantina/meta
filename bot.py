@@ -45,9 +45,10 @@ def diary_note(message):  # записывает в базу новую запи
     m = message.text[6:]
     us = message.from_user.id
     if m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
-        bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
         diary.new_emotion(us, m)
         data.situation(us, 1)
+        bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
+
 
 
 @bot.message_handler(commands=['utc']) # настраивает часовой пояс
@@ -74,9 +75,9 @@ def diary_week(message):  # присылает дневник за неделю
         for day in week:
             day_of_week = day[0]
             bot.send_message(message.from_user.id, f"Итак, в {day_of_week} твои записи:")
-            print(day[1])
-            for i in range(0, len(day[1])):
-                emotion, sit = str(day[1][i - 1][0]), str(day[1][i - 1][1])
+            for i in range(1, len(day)):
+                string = ''
+                emotion, sit = str(day[i][0][0]), str(day[i][0][1])
                 print(sit, emotion)
                 # advice = diary.get_advice(message.from_user.id). Пока нет функции, но она будет анализировать базу с эмоциями
                 string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
@@ -117,8 +118,7 @@ def dialog(message):  # проверки сообщения
         bot.send_message(us, "Ты ввел что-то неправильно, повтори пожалуйста. Если надоело, просто напиши 'хватит)'")
 
 
-    elif data.get_situation(us) and len(m) > 6:
-        data.situation(us, 0)
+    elif data.get_situation(us):
         diary.situation(us, m)
         bot.send_message(us, 'Отлично, ты сделал запись в нашем дневнике! Ты можешь сделать еще одну, написав "/note"')
 

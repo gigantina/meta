@@ -1,7 +1,7 @@
 import threading
 import sqlite3
 import data
-
+import functions as f
 global db, sql, lock
 db = sqlite3.connect('data-emotions.db', check_same_thread=False)
 sql = db.cursor()
@@ -16,42 +16,41 @@ def create():
             id INTEGER,
             situation TEXT,
             emotion TEXT,
-            days INTEGER
+            days INT,
+            days_of_week INT
             )""")
     db.commit()
     lock.release()
 
 
-def new_emotion(user_id, emotion, islock=True): # новая запись в дневник
+def new_emotion(user_id, emotion, islock=True):  # новая запись в дневник
     if islock:
         lock.acquire(True)
-    sql.execute(f'INSERT INTO diary (id, situation, emotion, days) VALUES (?, ?, ?, ?)',
-                (user_id, None, emotion, data.get_days(user_id, False)))
+    sql.execute(f'INSERT INTO diary (id, situation, emotion, days, days_of_week) VALUES (?, ?, ?, ?, ?)',
+                (user_id, None, emotion, data.get_days(user_id), f.day(user_id)))
     db.commit()
+    print('yeah')
     if islock:
         lock.release()
 
 
-def situation(user_id, text, islock=True): # дополнение записи ситуацией, описывающей эмоцию
-    lock.acquire(True)
+def situation(user_id, text, islock=True):  # дополнение записи ситуацией, описывающей эмоцию
+    if islock:
+        lock.acquire(True)
     text = str(text)
     number = get_max_key(user_id)
-    print(number)
     sql.execute(f'UPDATE diary SET situation = "{text}" WHERE key_ = {number}')
     db.commit()
-    sql.execute(f'SELECT * FROM diary')
-    f = sql.fetchone()
-    print('emo', f)
     data.situation(user_id, 0, False)
+    if islock:
+        lock.release()
 
-    lock.release()
 
-
+# функция, возвращающая записи в дневнике за неделю
 def get_week_diary(user_id, islock=True):
     if islock:
         lock.acquire(True)
-    days = data.get_days(user_id, False)
-    print('true')
+    days = data.get_days(user_id)
     res = []
     if days < 8:
         start = 1
@@ -61,30 +60,35 @@ def get_week_diary(user_id, islock=True):
     for i in range(start, end + 1):
         sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
         situations = sql.fetchall()
-        part = [what_day(i)]
+        sql.execute(f"SELECT days_of_week FROM diary WHERE id = {user_id} AND days = {i}")
+        day = sql.fetchone()
+        part = [what_day(day[0])]
 
         for sit in situations:
-            print(sit)
             sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
             emotion = sql.fetchone()
-            print(emotion)
             emo = [(emotion[0], sit[0])]
-            print(emo)
             part.append(emo)
-            print('кортеж', part)
         res.append(part)
     if islock:
         lock.release()
+    print(res)
     return res
 
 
-# функция со всем дневником
+# функция, возвращающая записи в дневнике за все время
 def get_diary(user_id, islock=True):
     pass
 
+
+# функция, возвращающая записи в дневнике за день
+def get_diary_day(user_id, islock=True):
+    pass
+
+
 # костылечек (не работает)
 def what_day(i):
-    return ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'][i]
+    return ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'][i - 1]
 
 
 def get_max_key(user_id):
@@ -95,3 +99,16 @@ def get_max_key(user_id):
     for i in f:
         if i[1] == user_id:
             return i[0]
+
+
+def day_of_week(user_id, day, islock=True):
+    lock.acquire(True)
+    number = get_max_key(user_id)
+    sql.execute(f'UPDATE diary SET day = "{day}" WHERE key_ = {number}')
+    db.commit()
+    lock.release()
+
+def get_day_of_week(user_id, islock=True):
+    lock.acquire(True)
+    number = get_max_key(user_id)
+    sql.execute(f'SELECT day_of_week FROM diary WHERE key_ = {number}')
