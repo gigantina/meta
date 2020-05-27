@@ -4,7 +4,6 @@ import telebot
 import emoji as e
 import functions as f
 import data
-from datetime import datetime
 from threading import Thread
 import diary
 
@@ -16,23 +15,14 @@ diary.create()
 
 
 def planning():  # для отправки сообщений в заданное время
-    random = False
     while True:
-        now = datetime.now()
-        if str(now.strftime("%H-%M-%S")) == '00-00-00':
-            for us in data.get_chats():
+        chats = data.get_chats()
+        for user in chats:
+            time = f.get_time(data.get_utc(user[0]))
+            if time == '00-00-00':
                 diary.new_day()
-                if diary.get_days() % 7 == 0:
-                    diary.new_week()
-        if str(now.strftime("%H-%M-%S")) == '20-34-00':
-            for us in data.get_chats():
-                bot.send_message(chat[0],
-                                 "Добрый вечер, как у тебя настроение? Я настоятельно рекомендую заполнить таблицу эмоций сегодня. Выбери, что ты сегодня испытывал?")
-                data.feel(us, 1)
-            random = f.time()
-        elif str(now.strftime("%H-%M-%S")) == random:
-            for chat in data.get_chats():
-                bot.send_message(chat[0], "Привет, прости, если отвлекаю, мне просто интересно, как ты поживаешь))")
+            if time == '20-00-00':
+                bot.send_message(user[0], 'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)')
 
 
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
@@ -44,19 +34,36 @@ t.start()
 def welcome(message):  # приветствие, а также создание в базе нового пользователя
     data.new(message.from_user.id)
     bot.send_message(message.chat.id,
-                     "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
+                     'Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. Но моя главная функция - ведение дневника эмоций, а также их анализ. Советую сразу написать команду "/help", чтобы больше узнать, что и как писать. Надеюсь, что вам со мной будет интересно) {}'.format(
                          message.from_user.first_name, e.snake, e.celebrate))
-    bot.send_message(message.chat.id, str(datetime.now(tz=None)))
+    bot.send_message(message.from_user.id,
+                     'Точно, я чуть не забыл! Пожалуйста, напиши команду "/utc [свой часовой пояс в формате UTC]", чтобы я мог нормально тебе присылать сообщения. Например, "/utc +3" для Москвы. Еще увидимся!')
 
 
 @bot.message_handler(commands=['note'])
-def diary_note(message):  # записывает в базу к значению feel 1
+def diary_note(message):  # записывает в базу новую запись в дневник
     m = message.text[6:]
     us = message.from_user.id
     if m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
         bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
         diary.new_emotion(us, m)
         data.situation(us, 1)
+
+
+@bot.message_handler(commands=['utc']) # настраивает часовой пояс
+def change_utc(message):
+    m = message.text
+    try:
+        op = m[5]
+        time = int(m[5:])
+        if (time > -13) and (time < 15) and (op == '+' or op == '-'):
+            print(time, op)
+            data.utc(time, message.from_user.id)
+        else:
+            print(time, op)
+            bot.send_message(message.from_user.id, "Введен неправильный формат времени!")
+    except:
+        bot.send_message(message.from_user.id, "Введен неправильный формат времени!")
 
 
 @bot.message_handler(commands=['diary_week'])

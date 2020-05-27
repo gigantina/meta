@@ -3,8 +3,16 @@
 import random as r
 import emoji as e
 from pymorphy2 import MorphAnalyzer
+from datetime import datetime, timedelta
 
 places = {}
+
+
+def get_time(hour):
+    now = datetime.now()
+    current = now + timedelta(hours=hour)
+    res = str(current.strftime('%H-%M-%S'))
+    return res
 
 
 def from_e_to_game(choice):
