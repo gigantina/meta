@@ -6,7 +6,7 @@ import sqlite3
 global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
 sql = db.cursor()
-lock = threading.Lock()
+lock = threading.Lock() # для блокировки второго потока, потому что sqlite3 не работает с потоками
 
 
 def create():
@@ -23,16 +23,17 @@ def create():
     lock.release()
 
 
-def new(user_id, islock=True):
+def new(user_id, islock=True): #создание нового пользователя в базе
     lock.acquire(True)
     sql.execute("SELECT id FROM users")
-    if not sql.fetchone():
+    f = sql.fetchone()
+    if not f:
         sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?, ?)", (user_id, 0, 0, 0, 1))
         db.commit()
     lock.release()
 
 
-def game(user_id, isGame, islock=True):
+def game(user_id, isGame, islock=True): # сообщения будут восприниматься как в игре "камень-ножницы-бумага"
     lock.acquire(True)
     sql.execute(f"UPDATE users SET game = {isGame} WHERE id = {user_id}")
     db.commit()
@@ -41,13 +42,16 @@ def game(user_id, isGame, islock=True):
 
 def get_game(user_id, islock=True):
     lock.acquire(True)
+    sql.execute("SELECT * FROM users")
+    f = sql.fetchall()
+    print(f)
     sql.execute(f"SELECT game FROM users WHERE id = {user_id}")
     res = sql.fetchone()
     lock.release()
     return res[0]
 
 
-def feel(user_id, isFeel, islock=True):
+def feel(user_id, isFeel, islock=True): # сообщение будут записываться как запись эмоции. Обычно после команды "/note"
     lock.acquire(True)
     sql.execute(f"UPDATE users SET feel = {isFeel} WHERE id = {user_id}")
     db.commit()
@@ -62,7 +66,7 @@ def get_feel(user_id, islock=True):
     return res[0]
 
 
-def situation(user_id, isFeel, islock=True):
+def situation(user_id, isFeel, islock=True): # сообщение будут записываться как запись ситуации. Обычно после записи эмоций
     lock.acquire(True)
     sql.execute(f"UPDATE users SET situation = {isFeel} WHERE id = {user_id}")
     db.commit()

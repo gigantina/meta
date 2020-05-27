@@ -22,10 +22,9 @@ def create():
     lock.release()
 
 
-def new_emotion(user_id, emotion, islock=True):
+def new_emotion(user_id, emotion, islock=True): # новая запись в дневник
     if islock:
         lock.acquire(True)
-
     sql.execute(f'INSERT INTO diary (id, situation, emotion, days) VALUES (?, ?, ?, ?)',
                 (user_id, None, emotion, data.get_days(user_id, False)))
     db.commit()
@@ -33,7 +32,7 @@ def new_emotion(user_id, emotion, islock=True):
         lock.release()
 
 
-def situation(user_id, text, islock=True):
+def situation(user_id, text, islock=True): # дополнение записи ситуацией, описывающей эмоцию
     lock.acquire(True)
     text = str(text)
     number = get_max_key(user_id)
@@ -43,6 +42,7 @@ def situation(user_id, text, islock=True):
     sql.execute(f'SELECT * FROM diary')
     f = sql.fetchone()
     print('emo', f)
+    data.situation(user_id, 0, False)
 
     lock.release()
 
@@ -82,7 +82,7 @@ def get_week_diary(user_id, islock=True):
 def get_diary(user_id, islock=True):
     pass
 
-
+# костылечек (не работает)
 def what_day(i):
     return ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'][i]
 
@@ -92,8 +92,6 @@ def get_max_key(user_id):
     f = sql.fetchall()
     print(f)
     f.reverse()
-    print(f)
-    for i in range(len(f)):
-        if f[i][1] == user_id:
-            print(i)
-            return i + 1
+    for i in f:
+        if i[1] == user_id:
+            return i[0]

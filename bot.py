@@ -8,7 +8,6 @@ from datetime import datetime
 from threading import Thread
 import diary
 
-global feel
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
@@ -16,7 +15,7 @@ data.create()
 diary.create()
 
 
-def planning():
+def planning():  # для отправки сообщений в заданное время
     random = False
     while True:
         now = datetime.now()
@@ -36,27 +35,32 @@ def planning():
                 bot.send_message(chat[0], "Привет, прости, если отвлекаю, мне просто интересно, как ты поживаешь))")
 
 
-t = Thread(target=planning)
+t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
+
 t.start()
 
 
 @bot.message_handler(commands=['start'])
-def welcome(message):
+def welcome(message):  # приветствие, а также создание в базе нового пользователя
     data.new(message.from_user.id)
     bot.send_message(message.chat.id,
                      "Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. А также много чего еще, я надеюсь, что вам со мной будет интересно) {}".format(
                          message.from_user.first_name, e.snake, e.celebrate))
     bot.send_message(message.chat.id, str(datetime.now(tz=None)))
-    print(message.from_user.id)
 
 
 @bot.message_handler(commands=['note'])
-def diary_note(message):
-    data.feel(message.from_user.id, 1)
+def diary_note(message):  # записывает в базу к значению feel 1
+    m = message.text[6:]
+    us = message.from_user.id
+    if m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
+        bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
+        diary.new_emotion(us, m)
+        data.situation(us, 1)
 
 
 @bot.message_handler(commands=['diary_week'])
-def diary_week(message):
+def diary_week(message):  # присылает дневник за неделю
     week = diary.get_week_diary(message.from_user.id)
     if week:
         res = ''
@@ -67,7 +71,7 @@ def diary_week(message):
             for i in range(0, len(day[1])):
                 emotion, sit = str(day[1][i - 1][0]), str(day[1][i - 1][1])
                 print(sit, emotion)
-                # advice = diary.get_advice(message.from_user.id)
+                # advice = diary.get_advice(message.from_user.id). Пока нет функции, но она будет анализировать базу с эмоциями
                 string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
                 res += string
     else:
@@ -77,7 +81,7 @@ def diary_week(message):
 
 
 @bot.message_handler(content_types=['text'])
-def dialog(message):
+def dialog(message):  # проверки сообщения
     us = message.from_user.id
     m = str(message.text).lower()
     if ("шутк" in m) or ("шуте" in m) or ("прикол" in m) and ("прикольно" not in m):
@@ -87,7 +91,7 @@ def dialog(message):
     elif 'мем' in m or '2014' in m or 'смеш' in m:
         mem = f.send_mem()
         bot.send_photo(us, mem)
-    elif 'камень-ножницы-бумаг' in m:
+    elif 'камень-ножницы-бумаг' in m or 'играть' in m:
         data.game(us, 1)
         bot.send_message(us, 'Выбирай! Если больше не хочешь играть, скажи "хватит" ' + e.smile)
 
@@ -105,11 +109,6 @@ def dialog(message):
     elif data.get_game(us):
         bot.send_message(us, "Ты ввел что-то неправильно, повтори пожалуйста. Если надоело, просто напиши 'хватит)'")
 
-    elif data.get_feel(us) and m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
-        bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
-        diary.new_emotion(us, m)
-        data.feel(us, 0)
-        data.situation(us, 1)
 
     elif data.get_situation(us) and len(m) > 6:
         data.situation(us, 0)
