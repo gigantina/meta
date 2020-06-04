@@ -119,3 +119,12 @@ def get_utc(user_id, islock=True):
     if islock:
         lock.release()
     return res[0]
+
+def del_table(islock=True): # полная очистка базы (WARNING!)
+    if islock:
+        lock.acquire(True)
+    sql.execute(f"DELETE from users")
+    db.commit()
+    if islock:
+        lock.release()
+

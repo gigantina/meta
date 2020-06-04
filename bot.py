@@ -10,9 +10,6 @@ import diary
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
-data.create()
-diary.create()
-
 
 def planning():  # для отправки сообщений в заданное время
     while True:
@@ -57,6 +54,16 @@ def diary_note(message):  # записывает в базу новую запи
         bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал')
 
 
+@bot.message_handler(commands=['del_table_15754'])
+def delete(message):
+    data.del_table()
+
+
+@bot.message_handler(commands=['del_table_15755'])
+def delete(message):
+    diary.del_table()
+
+
 @bot.message_handler(commands=['utc'])  # настраивает часовой пояс
 def change_utc(message):
     m = message.text
@@ -80,7 +87,7 @@ def diary_week(message):  # присылает дневник за неделю
         res = ''
         for day in week:
             day_of_week = day[0]
-            #bot.send_message(message.from_user.id, f"Итак, в {day_of_week} твои записи:")
+            # bot.send_message(message.from_user.id, f"Итак, в {day_of_week} твои записи:")
             bot.send_message(message.from_user.id, f"Итак, твои записи за неделю:")
             for i in range(1, len(day)):
                 string = ''
@@ -128,7 +135,6 @@ def dialog(message):  # проверки сообщения
 
     elif data.get_game(us):
         bot.send_message(us, "Ты ввел что-то неправильно, повтори пожалуйста. Если надоело, просто напиши 'хватит)'")
-
 
     elif data.get_situation(us):
         diary.situation(us, m)

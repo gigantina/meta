@@ -2,25 +2,11 @@ import threading
 import sqlite3
 import data
 import functions as f
+
 global db, sql, lock
 db = sqlite3.connect('data-emotions.db', check_same_thread=False)
 sql = db.cursor()
 lock = threading.Lock()
-
-
-def create():
-    lock.acquire(True)
-
-    sql.execute("""CREATE TABLE IF NOT EXISTS diary (
-            key_ INTEGER PRIMARY KEY,
-            id INTEGER,
-            situation TEXT,
-            emotion TEXT,
-            days INT,
-            days_of_week INT
-            )""")
-    db.commit()
-    lock.release()
 
 
 def new_emotion(user_id, emotion, islock=True):  # новая запись в дневник
@@ -108,7 +94,17 @@ def day_of_week(user_id, day, islock=True):
     db.commit()
     lock.release()
 
+
 def get_day_of_week(user_id, islock=True):
     lock.acquire(True)
     number = get_max_key(user_id)
     sql.execute(f'SELECT day_of_week FROM diary WHERE key_ = {number}')
+
+
+def del_table(islock=True):  # полная очистка базы (WARNING!)
+    if islock:
+        lock.acquire(True)
+    sql.execute(f"DELETE from diary")
+    db.commit()
+    if islock:
+        lock.release()
