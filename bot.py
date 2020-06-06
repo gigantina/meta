@@ -103,7 +103,7 @@ def diary_week(message):  # присылает дневник за неделю
 
 
 @bot.message_handler(commands=['diary_all'])
-def diary(message):
+def diary_all(message):
     bot.send_message(message.from_user.id, 'В разработке')
 
 
