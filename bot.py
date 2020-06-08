@@ -168,4 +168,4 @@ def dialog(message):  # проверки сообщения
     else:
         bot.send_message(us, "хммммм")
 
-bot.infinity_polling(True)
+bot.infinity_polling(True, timeout=300)
