@@ -4,6 +4,7 @@ import threading
 import sqlite3
 import diary
 import functions as f
+import analysis as ans
 
 global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
@@ -71,7 +72,7 @@ def get_situation(user_id, islock=True):
     res = sql.fetchone()
     lock.release()
     print('sdfsdf', res)
-    return res[0]
+    return int(res[0])
 
 
 def get_chats(islock=True):  # возвращает список id всех пользователей

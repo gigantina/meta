@@ -15,9 +15,8 @@ def get_time(hour):
     res = str(current.strftime('%H-%M-%S'))
     return res
 
-0
+
 def day(user_id):
-    print('s')
     day = (datetime.today() + timedelta(hours=data.get_utc(user_id))).isoweekday()
     return day
 
@@ -92,4 +91,9 @@ def send_mem():
 
 def time():
     res = f"{r.randint(0, 24)}-{r.randint(0, 60)}-{r.randint(0, 60)}"
+    return res
+
+
+def normal():
+    res = r.choice(['Да ладно!', 'Ну окей, нормально', 'Желаю удачи, конечно', 'А что, так можно было что ли?!', 'Ну и хорошо', 'Отлично'])
     return res

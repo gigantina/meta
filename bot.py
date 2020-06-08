@@ -6,10 +6,12 @@ import functions as f
 import data
 from threading import Thread
 import diary
+import analysis as ans
 
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
 bot = telebot.TeleBot(TOKEN)
+
 
 def planning():  # для отправки сообщений в заданное время
     while True:
@@ -21,6 +23,18 @@ def planning():  # для отправки сообщений в заданно�
             if time == '20-00-00':
                 bot.send_message(user[0],
                                  'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)')
+            if f.day(user[0]) == 2 or f.day(user[0]) == 5:
+                if diary.analize(user[0]):
+                    bot.send_message(user[0], 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:')
+                    res = ans.analysis_sentiment(ans.analysis_data(diary.analize(user[0])))
+                    if not res:
+                        bot.send_message(user[0],
+                                         'Знаешь, в последнее время я вижу в тебе много негативных эмоций. Пожалуйста, если ты часто чувствуешь себя плохо, обратись к специалисту. Можешь воспользоваться этим анонимным телефоном доверия: \n 8-800-2000-122, звонок анонимный и бесплатный. Помни, это не стыдно!')
+                    if res == 1:
+                        bot.send_message(user[0], 'Судя по твоему дневнику, с тобой все в порядке, ура!')
+
+                    else:
+                        bot.send_message(user[0], 'Ох, как бы странно это не звучало, но меня настораживает обильное количество позитива в твоем дневнике. Знаешь, не всегда много хороших эмоций - хорошо. Если тебя беспокоит твое состояние, обратись к специалисту')
 
 
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
@@ -46,7 +60,7 @@ def commands(message):
 
 @bot.message_handler(commands=['note'])
 def diary_note(message):  # записывает в базу новую запись в дневник
-    m = message.text[6:]
+    m = str(message.text)[6:].lower()
     us = message.from_user.id
     if m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
         diary.new_emotion(us, m)
@@ -57,11 +71,13 @@ def diary_note(message):  # записывает в базу новую запи
 @bot.message_handler(commands=['del_table_15754'])
 def delete(message):
     data.del_table()
+    bot.send_message(message.from_user.id, 'Очищено')
 
 
 @bot.message_handler(commands=['del_table_15755'])
 def delete(message):
     diary.del_table()
+    bot.send_message(message.from_user.id, 'Очищено')
 
 
 @bot.message_handler(commands=['utc'])  # настраивает часовой пояс
@@ -87,7 +103,6 @@ def diary_week(message):  # присылает дневник за неделю
         res = ''
         for day in week:
             day_of_week = day[0]
-            # bot.send_message(message.from_user.id, f"Итак, в {day_of_week} твои записи:")
             bot.send_message(message.from_user.id, f"Итак, твои записи за неделю:")
             for i in range(1, len(day)):
                 string = ''
@@ -143,8 +158,14 @@ def dialog(message):  # проверки сообщения
     elif f.place(m):
         bot.send_message(us, f.place(m))
 
+    elif not ans.analysis_sentiment(ans.analysis_data([m])):
+        bot.send_message(us, 'Поменьше негатива, пожалуйста. Можешь записать это в дневник, кстати!')
+
+    elif ans.analysis_sentiment(m):
+        callback = f.normal()
+        bot.send_message(us, callback)
+
     else:
-        bot.send_message(us, "a)")
+        bot.send_message(us, "хммммм")
 
-
-bot.polling(none_stop=True, interval=0)
+bot.infinity_polling(True)

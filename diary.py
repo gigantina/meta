@@ -2,6 +2,7 @@ import threading
 import sqlite3
 import data
 import functions as f
+import analysis as ans
 
 global db, sql, lock
 db = sqlite3.connect('data-emotions.db', check_same_thread=False)
@@ -108,3 +109,23 @@ def del_table(islock=True):  # полная очистка базы (WARNING!)
     db.commit()
     if islock:
         lock.release()
+
+
+def analize(user_id, islock=True):
+    if islock:
+        lock.acquire(True)
+    end = data.get_days(user_id)
+    res = []
+    #if end < 11:
+        #return 0
+    start = data.get_days(user_id) - 10
+    for i in range(start, end + 1):
+        sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
+        situations = sql.fetchall()
+        if situations:
+            for sit in situations:
+                sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
+                emotion = sql.fetchone()
+                res.append(str(emotion[0]) + ' ' +  str(sit[0]))
+    return res
+
