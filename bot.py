@@ -10,10 +10,23 @@ import diary
 import analysis as ans
 import time
 import check
+from flask import Flask, request
 
-TOKEN = "1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c"
+secret = "d934d73e-19ae-4553-b0a0-be348ed41f11"
+bot = telebot.TeleBot('1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c')
 
-bot = telebot.TeleBot(TOKEN)
+bot.remove_webhook()
+time.sleep(1)
+bot.set_webhook(url="https://gigantina.pythonanywhere.com/{}".format(secret))
+
+app = Flask(__name__)
+
+
+@app.route('/{}'.format(secret), methods=["POST"])
+def webhook():
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    print("Message")
+    return "ok", 200
 
 
 def menu():
