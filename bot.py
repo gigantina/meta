@@ -13,7 +13,7 @@ import check
 
 TOKEN = "1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c"
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, threaded=False)
 
 
 def menu():
