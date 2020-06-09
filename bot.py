@@ -261,7 +261,7 @@ def dialog(message):  # проверки сообщения
 
 while True:
     try:
-        bot.polling(none_stop=True, timeout=123)
+        bot.infinity_polling(True)
 
     except Exception as e:
         print(e)
