@@ -5,13 +5,13 @@ from telebot import types
 import emoji as e
 import functions as f
 import data
-from threading import Thread
 import diary
 import analysis as ans
 import time
 import check
+from threading import Thread
 
-TOKEN = "1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c"
+TOKEN = "1114362533:AAEf54Qf80IJviEmP3AAoin0SQnc3cdMX7k"
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -260,9 +260,10 @@ def dialog(message):  # проверки сообщения
         bot.send_message(us, "хммммм", reply_markup=keyboard)
 
 
+
 while True:
     try:
-        bot.infinity_polling(True)
+        bot.polling(True, timeout=200)
 
     except Exception as e:
         print(e)
