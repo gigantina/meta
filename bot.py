@@ -5,28 +5,14 @@ from telebot import types
 import emoji as e
 import functions as f
 import data
-from threading import Thread
 import diary
 import analysis as ans
 import time
 import check
-from flask import Flask, request
 
-secret = "d934d73e-19ae-4553-b0a0-be348ed41f11"
-bot = telebot.TeleBot('1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c')
+TOKEN = "1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c"
 
-bot.remove_webhook()
-time.sleep(1)
-bot.set_webhook(url="https://gigantina.pythonanywhere.com/{}".format(secret))
-
-app = Flask(__name__)
-
-
-@app.route('/{}'.format(secret), methods=["POST"])
-def webhook():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    print("Message")
-    return "ok", 200
+bot = telebot.TeleBot(TOKEN)
 
 
 def menu():
@@ -48,42 +34,6 @@ def game_menu():
 global keyboard, game_keyboard
 keyboard = menu()
 game_keyboard = game_menu()
-
-
-def planning():  # для отправки сообщений в заданное время
-    while True:
-        chats = data.get_chats()
-        for user in chats:
-            time = f.get_time(data.get_utc(user[0]))
-            if time == '00-00-00':
-                data.new_day(user[0])
-            if time == '20-00-00':
-                bot.send_message(user[0],
-                                 'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)',
-                                 reply_markup=keyboard)
-            if time == '15-00-00' and (check.get_tuesday(user[0]) or check.get_friday(user[0])):
-                if diary.analize(user[0]) != None:
-                    bot.send_message(user[0], 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:',
-                                     reply_markup=keyboard)
-                    res = ans.analysis_sentiment(ans.analysis_data(diary.analize(user[0])))
-                    if not res:
-                        bot.send_message(user[0],
-                                         'Знаешь, в последнее время я вижу в тебе много негативных эмоций. Пожалуйста, если ты часто чувствуешь себя плохо, обратись к специалисту. Можешь воспользоваться этим анонимным телефоном доверия: \n 8-800-2000-122, звонок анонимный и бесплатный. Помни, это не стыдно!',
-                                         reply_markup=keyboard)
-                    if res == 1:
-                        bot.send_message(user[0], 'Судя по твоему дневнику, с тобой все в порядке, ура!',
-                                         reply_markup=keyboard)
-                    else:
-                        bot.send_message(user[0],
-                                         'Ох, как бы странно это не звучало, но меня настораживает обильное количество позитива в твоем дневнике. Знаешь, не всегда много хороших эмоций - хорошо. Если тебя беспокоит твое состояние, обратись к специалисту',
-                                         reply_markup=keyboard)
-                check.tuesday_set(user[0], 0)
-                check.friday_set(user[0], 0)
-
-
-t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
-
-t.start()
 
 
 @bot.message_handler(commands=['start'])
@@ -270,6 +220,22 @@ def dialog(message):  # проверки сообщения
 
     else:
         bot.send_message(us, "хммммм", reply_markup=keyboard)
+
+
+def reminder(id):
+    bot.send_message(id,
+                     'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)',
+                     reply_markup=keyboard)
+
+
+def message_about(id):
+    bot.send_message(id, 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:',
+                     reply_markup=keyboard)
+
+
+def results(id, message):
+    bot.send_message(id, 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:',
+                     reply_markup=keyboard)
 
 
 while True:
