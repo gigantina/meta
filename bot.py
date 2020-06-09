@@ -13,7 +13,7 @@ from threading import Thread
 
 TOKEN = "1114362533:AAEf54Qf80IJviEmP3AAoin0SQnc3cdMX7k"
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, threaded=False)
 
 
 def menu():
@@ -155,7 +155,7 @@ def diary_week(message):  # присылает дневник за неделю
             for i in range(1, len(day)):
                 string = ''
                 emotion, sit = str(day[i][0][0]), str(day[i][0][1])
-                string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
+                string = f'Ты испытал {emotion} в данной ситуации: + \n {sit} \n + \n'
                 res += string
     else:
         res = 'О, ты еще не сделал записей на этой неделе! Ты ысегда можешь это сделать командой "/note"'
@@ -258,7 +258,6 @@ def dialog(message):  # проверки сообщения
 
     else:
         bot.send_message(us, "хммммм", reply_markup=keyboard)
-
 
 
 while True:
