@@ -2,7 +2,6 @@
 
 import threading
 import sqlite3
-import functions as f
 
 global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
