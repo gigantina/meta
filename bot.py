@@ -13,7 +13,7 @@ import check
 
 TOKEN = "1114362533:AAHzVc9RIitjqHztpdAGWWM-f-SQILqbY_c"
 
-bot = telebot.TeleBot(TOKEN, threaded=False)
+bot = telebot.TeleBot(TOKEN)
 
 
 def menu():
@@ -261,7 +261,7 @@ def dialog(message):  # проверки сообщения
 
 while True:
     try:
-        bot.infinity_polling(True)
+        bot.polling(True, timeout=200)
 
     except Exception as e:
         print(e)
