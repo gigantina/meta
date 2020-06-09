@@ -10,7 +10,7 @@ import analysis as ans
 import time
 import check
 
-TOKEN = '1114362533:AAHT9SpfbkI5lbqPeSn8F9pUz4txJsNZx94'
+TOKEN = "1114362533:AAHT9SpfbkI5lbqPeSn8F9pUz4txJsNZx94"
 
 bot = telebot.TeleBot(TOKEN)
 
