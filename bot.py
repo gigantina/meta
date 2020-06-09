@@ -66,6 +66,7 @@ def planning():  # для отправки сообщений в заданно�
                                          reply_markup=keyboard)
                 check.tuesday_set(user[0], 0)
                 check.friday_set(user[0], 0)
+        time.sleep(60)
 
 
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
