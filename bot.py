@@ -41,14 +41,14 @@ def planning():  # для отправки сообщений в заданно�
     while True:
         chats = data.get_chats()
         for user in chats:
-            time = f.get_time(data.get_utc(user[0]))
-            if time == '00-00-00':
+            time_now = f.get_time(data.get_utc(user[0]))
+            if time_now == '00-00-00':
                 data.new_day(user[0])
-            if time == '20-00-00':
+            if time_now == '20-00-00':
                 bot.send_message(user[0],
                                  'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)',
                                  reply_markup=keyboard)
-            if time == '15-00-00' and (check.get_tuesday(user[0]) or check.get_friday(user[0])):
+            if time_now == '15-00-00' and (check.get_tuesday(user[0]) or check.get_friday(user[0])):
                 if diary.analize(user[0]) != None:
                     bot.send_message(user[0], 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:',
                                      reply_markup=keyboard)
