@@ -161,4 +161,3 @@ def analize(user_id, islock=True):
                 emotion = sql.fetchone()
                 res.append(str(emotion[0]) + ' ' + str(sit[0]))
     return res
-
