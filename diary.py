@@ -92,14 +92,13 @@ def get_diary_day(user_id, islock=True):
     i = data.get_days(user_id)
     sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
     situations = sql.fetchall()
-    sql.execute(f"SELECT days_of_week FROM diary WHERE id = {user_id} AND days = {i}")
-    day = sql.fetchone()
+    print(situations)
 
     for sit in situations:
         sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
         emotion = sql.fetchone()
-        emo = [(emotion[0], sit[0])]
-    res.append(emo)
+        emo = (emotion[0], sit[0])
+        res.append(emo)
     if islock:
         lock.release()
     return res
@@ -153,9 +152,13 @@ def analize(user_id, islock=True):
     for i in range(start, end + 1):
         sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
         situations = sql.fetchall()
+        print(situations)
+        if len(situations) <= 10:
+            return None
         if situations:
             for sit in situations:
                 sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
                 emotion = sql.fetchone()
                 res.append(str(emotion[0]) + ' ' + str(sit[0]))
     return res
+
