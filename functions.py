@@ -1,24 +1,51 @@
 # -*- coding: utf-8 -*-
-
+import data
 import random as r
 import emoji as e
 from pymorphy2 import MorphAnalyzer
 from datetime import datetime, timedelta
-import data
+
+import check
+
 
 places = {}
 
 
 def get_time(hour):
     now = datetime.now()
-    current = now + timedelta(hours=hour)
-    res = str(current.strftime('%H-%M-%S'))
+    current = now - timedelta(hours=hour)
+    res = from_date_to_string(current)
     return res
 
 
 def day(user_id):
-    day = (datetime.today() + timedelta(hours=data.get_utc(user_id))).isoweekday()
-    return day
+    today = (datetime.today() - timedelta(hours=data.get_utc(user_id))).isoweekday()
+    if today == 2:
+        check.tuesday_set(user_id, 1)
+    elif today == 5:
+        check.friday_set(user_id, 1)
+    else:
+        check.tuesday_set(user_id, 0)
+        check.friday_set(user_id, 0)
+    return today
+
+
+def from_str_to_date(integer):
+    year = int(integer[:4])
+    month = int(integer[5:7])
+    day = int(integer[8:])
+    date = datetime.date(year, month, day)
+    return date
+
+
+def plus_day(date):
+    res = date + timedelta(days=1)
+    return res
+
+
+def from_date_to_string(date):
+    res = str(date.strftime('%H-%M-%S'))
+    return res
 
 
 def from_e_to_game(choice):
@@ -35,7 +62,7 @@ def from_e_to_game(choice):
 
 
 def jokes():
-    lines = '\n'.join([line.strip() for line in open('jokes.txt')])
+    lines = '\n'.join([line.strip() for line in open('jokes.txt', encoding='utf-8')])
     joke = lines.split('@')
     r.shuffle(joke)
     return joke[19]
@@ -89,11 +116,12 @@ def send_mem():
     return photo
 
 
-def time():
-    res = f"{r.randint(0, 24)}-{r.randint(0, 60)}-{r.randint(0, 60)}"
-    return res
-
-
 def normal():
-    res = r.choice(['Да ладно!', 'Ну окей, нормально', 'Желаю удачи, конечно', 'А что, так можно было что ли?!', 'Ну и хорошо', 'Отлично'])
+    res = r.choice(
+        ['Да ладно!', 'Ну окей, нормально', 'Желаю удачи, конечно', 'А что, так можно было что ли?!', 'Ну и хорошо',
+         'Отлично', 'Ок', 'Это смешно', 'Ты крут!', 'Хммм, ну ладно', 'Кхе-кхе', 'Это могло бы стать мемом',
+         'Грустно от этого', 'Классно', 'Немного скучновато', 'Как неожиданно', 'Аче)', 'Брбрбр...Питон не оценил',
+         'Хаха, у нас, у питонов, с этим шутки плохи!'])
     return res
+
+

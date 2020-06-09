@@ -8,6 +8,7 @@ from threading import Thread
 import diary
 import analysis as ans
 import time
+import check
 
 TOKEN = '1114362533:AAEBwGiAgdotOuwqWFLXCbmGTf2yCJIENQU'
 
@@ -20,12 +21,12 @@ def planning():  # для отправки сообщений в заданно�
         for user in chats:
             time = f.get_time(data.get_utc(user[0]))
             if time == '00-00-00':
-                diary.new_day()
+                data.new_day(user[0])
             if time == '20-00-00':
                 bot.send_message(user[0],
                                  'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)')
-            if f.day(user[0]) == 2 or f.day(user[0]) == 5:
-                if diary.analize(user[0]):
+            if time == '15-00-00' and (check.get_tuesday(user[0]) or check.get_friday(user[0])):
+                if diary.analize(user[0]) != None:
                     bot.send_message(user[0], 'Привет! Я недавно проанализировал твой дневник и вот твои результаты:')
                     res = ans.analysis_sentiment(ans.analysis_data(diary.analize(user[0])))
                     if not res:
@@ -33,10 +34,11 @@ def planning():  # для отправки сообщений в заданно�
                                          'Знаешь, в последнее время я вижу в тебе много негативных эмоций. Пожалуйста, если ты часто чувствуешь себя плохо, обратись к специалисту. Можешь воспользоваться этим анонимным телефоном доверия: \n 8-800-2000-122, звонок анонимный и бесплатный. Помни, это не стыдно!')
                     if res == 1:
                         bot.send_message(user[0], 'Судя по твоему дневнику, с тобой все в порядке, ура!')
-
                     else:
                         bot.send_message(user[0],
                                          'Ох, как бы странно это не звучало, но меня настораживает обильное количество позитива в твоем дневнике. Знаешь, не всегда много хороших эмоций - хорошо. Если тебя беспокоит твое состояние, обратись к специалисту')
+                check.tuesday_set(user[0], 0)
+                check.friday_set(user[0], 0)
 
 
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
@@ -47,6 +49,7 @@ t.start()
 @bot.message_handler(commands=['start'])
 def welcome(message):  # приветствие, а также создание в базе нового пользователя
     data.new(message.from_user.id)
+    check.new(message.from_user.id)
     bot.send_message(message.chat.id,
                      'Привет, {}! Я Длиннохвостик - веселый питон {}, а что самое интересное, я написан на Python,как иронично) Я могу стать отличным собеседником, могу рассказать шутку, мы можем поиграть в камень-ножницы-бумагу, отправить мем прямиком из 2014 или оценить вашу фотографию. Но моя главная функция - ведение дневника эмоций, а также их анализ. Советую сразу написать команду "/help", чтобы больше узнать, что и как писать. Надеюсь, что вам со мной будет интересно) {}'.format(
                          message.from_user.first_name, e.snake, e.celebrate))
@@ -56,12 +59,16 @@ def welcome(message):  # приветствие, а также создание 
 
 @bot.message_handler(commands=['help'])
 def commands(message):
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
     bot.send_message(message.from_user.id,
                      'Итак, все возможности бота \n Основные функции: \n 1. /note [эмоция]. Делает новую запись в дневнике эмоций. Вам необходимо выбрать одну из этих эмоций: грусть, гнев, страх, радость, вина \n 2. /utc [время]. Настройка времени в формате UTC. Например, для Москвы необходимо будет написать "/utc +3". По умолчанию стоит время по Лондону \n 3. /diary_week. Вам присылаются записи дневника за последние 7 дней, а так же возможные советы исходя из его анализа \n 4. /diary_all. Вам присылаются записи дневника за все время \n Фишки: \n 1. Просто напишите любой топоним - я найду, что ответить! \n 2. Напишите слово или фразу, включающее слово "мем", я пришлю что-ниюудь смешное из 2014 \n 3. Напишите слово или фразу, включающее слово "шутка" \n 4. Мы можем сыграть в камень-ножницы-бумагу, просто напиши название игры и игрв начнется! \n 5. Ты можешь просто делиться мыслями со мной, я попробую понять тебя (в разработке)')
 
 
 @bot.message_handler(commands=['note'])
 def diary_note(message):  # записывает в базу новую запись в дневник
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
     m = str(message.text)[6:].lower()
     us = message.from_user.id
     if m in ['вина', 'радость', 'грусть', 'гнев', 'страх']:
@@ -84,6 +91,8 @@ def delete(message):
 
 @bot.message_handler(commands=['utc'])  # настраивает часовой пояс
 def change_utc(message):
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
     m = message.text
     try:
         op = m[5]
@@ -100,17 +109,20 @@ def change_utc(message):
 
 @bot.message_handler(commands=['diary_week'])
 def diary_week(message):  # присылает дневник за неделю
-    week = diary.get_week_diary(message.from_user.id)
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
+    start, end = diary.get_week_diary(message.from_user.id)
+    week = diary.get_notes(start, end, message.from_user.id)
+    print(1)
     if week:
         res = ''
         for day in week:
             day_of_week = day[0]
             bot.send_message(message.from_user.id, f"Итак, твои записи за неделю:")
+            bot.send_message(message.from_user.id, day_of_week.capitalize() + ":")
             for i in range(1, len(day)):
                 string = ''
                 emotion, sit = str(day[i][0][0]), str(day[i][0][1])
-                print(sit, emotion)
-                # advice = diary.get_advice(message.from_user.id). Пока нет функции, но она будет анализировать базу с эмоциями
                 string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
                 res += string
     else:
@@ -121,11 +133,54 @@ def diary_week(message):  # присылает дневник за неделю
 
 @bot.message_handler(commands=['diary_all'])
 def diary_all(message):
-    bot.send_message(message.from_user.id, 'В разработке')
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
+    start, end = diary.get_week_diary(message.from_user.id)
+    week = diary.get_notes(start, end, message.from_user.id)
+    if week:
+        res = ''
+        date = 1
+        for day in week:
+            day_of_week = day[0]
+            bot.send_message(message.from_user.id, f"Итак, твои записи за все время:")
+            bot.send_message(message.from_user.id, f"День {date}, {day_of_week} :")
+            date += 1
+            for i in range(1, len(day)):
+                string = ''
+                emotion, sit = str(day[i][0][0]), str(day[i][0][1])
+                string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
+                res += string
+    else:
+        res = 'О, ты еще не сделал записей! Ты всегда можешь это сделать командой "/note"'
+
+    bot.send_message(message.from_user.id, res)
+
+@bot.message_handler(commands=['diary_last'])
+def diary_all(message):
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
+    week = diary.get_diary_day(message.from_user.id)
+    day = week[0]
+    if week:
+        res = ''
+        bot.send_message(message.from_user.id, f"Итак, твои записи за день:")
+        for i in range(0, len(day)):
+            string = ''
+            emotion, sit = str(day[i][0]), str(day[i][1])
+            string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
+            res += string
+    else:
+        res = 'О, ты еще не сделал записей за сегодня! Ты всегда можешь это сделать командой "/note"'
+
+    bot.send_message(message.from_user.id, res)
+
+
 
 
 @bot.message_handler(content_types=['text'])
 def dialog(message):  # проверки сообщения
+    data.new(message.from_user.id)
+    check.new(message.from_user.id)
     us = message.from_user.id
     m = str(message.text).lower()
     if ("шутк" in m) or ("шуте" in m) or ("прикол" in m) and ("прикольно" not in m):
@@ -173,7 +228,7 @@ def dialog(message):  # проверки сообщения
 
 while True:
     try:
-        bot.polling(none_stop=True)
+        bot.polling(none_stop=True, timeout=123)
 
     except Exception as e:
         print(e)

@@ -2,9 +2,7 @@
 
 import threading
 import sqlite3
-import diary
 import functions as f
-import analysis as ans
 
 global db, sql, lock
 db = sqlite3.connect('data.db', check_same_thread=False)
@@ -12,31 +10,16 @@ sql = db.cursor()
 lock = threading.Lock()  # для блокировки второго потока, потому что sqlite3 не работает с потоками
 
 
-def create():
-    lock.acquire(True)
-
-    sql.execute("""CREATE TABLE IF NOT EXISTS users (
-            id INT,
-            game INT,
-            utc INT,
-            situation INT,
-            days INT
-            )""")
-    db.commit()
-    lock.release()
-
-
 def new(user_id, islock=True):  # создание нового пользователя в базе
     if islock:
         lock.acquire(True)
     sql.execute("SELECT id FROM users")
-    f = sql.fetchone()
-    if not f:
+    fetch = sql.fetchone()
+    if not fetch:
         sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?, ?)", (user_id, 0, 0, 0, 1))
         db.commit()
     if islock:
         lock.release()
-
 
 def game(user_id, isGame, islock=True):  # сообщения будут восприниматься как в игре "камень-ножницы-бумага"
     if islock:
@@ -71,7 +54,6 @@ def get_situation(user_id, islock=True):
     sql.execute(f"SELECT situation FROM users WHERE id = {user_id}")
     res = sql.fetchone()
     lock.release()
-    print('sdfsdf', res)
     return int(res[0])
 
 
@@ -97,6 +79,8 @@ def get_days(user_id, islock=True):
 def new_day(user_id, islock=True):
     if islock:
         lock.acquire(True)
+    day = get_days(user_id)
+    date = get_date(user_id)
     sql.execute("UPDATE diary SET days = days + 1 WHERE id = ?", (user_id,))
     db.commit()
     if islock:
@@ -121,11 +105,11 @@ def get_utc(user_id, islock=True):
         lock.release()
     return res[0]
 
-def del_table(islock=True): # полная очистка базы (WARNING!)
+
+def del_table(islock=True):  # полная очистка базы (WARNING!)
     if islock:
         lock.acquire(True)
     sql.execute(f"DELETE from users")
     db.commit()
     if islock:
         lock.release()
-

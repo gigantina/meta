@@ -2,7 +2,6 @@ import threading
 import sqlite3
 import data
 import functions as f
-import analysis as ans
 
 global db, sql, lock
 db = sqlite3.connect('data-emotions.db', check_same_thread=False)
@@ -13,10 +12,10 @@ lock = threading.Lock()
 def new_emotion(user_id, emotion, islock=True):  # новая запись в дневник
     if islock:
         lock.acquire(True)
-    sql.execute(f'INSERT INTO diary (id, situation, emotion, days, days_of_week) VALUES (?, ?, ?, ?, ?)',
+
+    sql.execute("INSERT INTO diary (id, situation, emotion, days, days_of_week) VALUES (?, ?, ?, ?, ?)",
                 (user_id, None, emotion, data.get_days(user_id), f.day(user_id)))
     db.commit()
-    print('yeah')
     if islock:
         lock.release()
 
@@ -35,21 +34,32 @@ def situation(user_id, text, islock=True):  # дополнение записи 
 
 # функция, возвращающая записи в дневнике за неделю
 def get_week_diary(user_id, islock=True):
-    if islock:
-        lock.acquire(True)
+    print(321)
     days = data.get_days(user_id)
-    res = []
+    print(1)
     if days < 8:
         start = 1
     else:
         start = data.get_days(user_id) - 7
     end = days
+    print(123)
+    return (start, end)
+
+
+def get_notes(start, end, user_id, islock=True):
+    if islock:
+        lock.acquire(True)
+    res = []
     for i in range(start, end + 1):
         sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
         situations = sql.fetchall()
         sql.execute(f"SELECT days_of_week FROM diary WHERE id = {user_id} AND days = {i}")
         day = sql.fetchone()
-        part = [what_day(day[0])]
+        part = []
+        if day:
+            part.append(what_day(day[0]))
+        else:
+            part.append(None)
 
         for sit in situations:
             sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
@@ -59,18 +69,40 @@ def get_week_diary(user_id, islock=True):
         res.append(part)
     if islock:
         lock.release()
-    print(res)
     return res
 
 
 # функция, возвращающая записи в дневнике за все время
-def get_diary(user_id, islock=True):
-    pass
+def get_all_diary(user_id, islock=True):
+    if islock:
+        lock.acquire(True)
+    days = data.get_days(user_id)
+    start = 1
+    end = days
+    if islock:
+        lock.release()
+    return [start, end]
 
 
-# функция, возвращающая записи в дневнике за день
+# функция, возвращающая записи в дневнике за последний день
 def get_diary_day(user_id, islock=True):
-    pass
+    if islock:
+        lock.acquire(True)
+    res = []
+    i = data.get_days(user_id)
+    sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
+    situations = sql.fetchall()
+    sql.execute(f"SELECT days_of_week FROM diary WHERE id = {user_id} AND days = {i}")
+    day = sql.fetchone()
+
+    for sit in situations:
+        sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
+        emotion = sql.fetchone()
+        emo = [(emotion[0], sit[0])]
+    res.append(emo)
+    if islock:
+        lock.release()
+    return res
 
 
 # костылечек (не работает)
@@ -81,7 +113,6 @@ def what_day(i):
 def get_max_key(user_id):
     sql.execute(f"SELECT * FROM diary")
     f = sql.fetchall()
-    print(f)
     f.reverse()
     for i in f:
         if i[1] == user_id:
@@ -116,8 +147,8 @@ def analize(user_id, islock=True):
         lock.acquire(True)
     end = data.get_days(user_id)
     res = []
-    #if end < 11:
-        #return 0
+    if end < 11:
+        return None
     start = data.get_days(user_id) - 10
     for i in range(start, end + 1):
         sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
@@ -126,6 +157,5 @@ def analize(user_id, islock=True):
             for sit in situations:
                 sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
                 emotion = sql.fetchone()
-                res.append(str(emotion[0]) + ' ' +  str(sit[0]))
+                res.append(str(emotion[0]) + ' ' + str(sit[0]))
     return res
-
