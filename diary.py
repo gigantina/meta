@@ -34,15 +34,12 @@ def situation(user_id, text, islock=True):  # дополнение записи 
 
 # функция, возвращающая записи в дневнике за неделю
 def get_week_diary(user_id, islock=True):
-    print(321)
     days = data.get_days(user_id)
-    print(1)
     if days < 8:
         start = 1
     else:
         start = data.get_days(user_id) - 7
     end = days
-    print(123)
     return (start, end)
 
 
@@ -92,7 +89,6 @@ def get_diary_day(user_id, islock=True):
     i = data.get_days(user_id)
     sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
     situations = sql.fetchall()
-    print(situations)
 
     for sit in situations:
         sql.execute(f"SELECT emotion FROM diary WHERE id = {user_id} AND situation = '{sit[0]}'")
@@ -152,7 +148,6 @@ def analize(user_id, islock=True):
     for i in range(start, end + 1):
         sql.execute(f"SELECT situation FROM diary WHERE id = {user_id} AND days = {i}")
         situations = sql.fetchall()
-        print(situations)
         if len(situations) <= 10:
             return None
         if situations:

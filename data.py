@@ -34,7 +34,6 @@ def get_game(user_id, islock=True):
         lock.acquire(True)
     sql.execute(f"SELECT game FROM users WHERE id = {user_id}")
     res = sql.fetchone()
-    print(res)
     if islock:
         lock.release()
     return res[0]
@@ -79,7 +78,6 @@ def new_day(user_id, islock=True):
     if islock:
         lock.acquire(True)
     day = get_days(user_id)
-    date = get_date(user_id)
     sql.execute("UPDATE diary SET days = days + 1 WHERE id = ?", (user_id,))
     db.commit()
     if islock:

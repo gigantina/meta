@@ -11,7 +11,7 @@ import time
 import check
 from threading import Thread
 
-TOKEN = "1114362533:AAEf54Qf80IJviEmP3AAoin0SQnc3cdMX7k"
+TOKEN = "1114362533:AAHOd3aHgSv0A1etukA-qRc9rjrnf1ThmQg"
 
 bot = telebot.TeleBot(TOKEN, threaded=False)
 
@@ -76,7 +76,6 @@ t.start()
 
 @bot.message_handler(commands=['start'])
 def welcome(message):  # приветствие, а также создание в базе нового пользователя
-    print(message.from_user.id)
     data.new(message.from_user.id)
     check.new(message.from_user.id)
     bot.send_message(message.chat.id,
@@ -130,11 +129,9 @@ def change_utc(message):
         op = m[5]
         time = int(m[5:])
         if (time > -13) and (time < 15) and (op == '+' or op == '-'):
-            print(time, op)
             data.utc(time, message.from_user.id)
             bot.send_message(message.from_user.id, "Часовой пояс установлен", reply_markup=keyboard)
         else:
-            print(time, op)
             bot.send_message(message.from_user.id, "Введен неправильный формат времени!", reply_markup=keyboard)
     except:
         bot.send_message(message.from_user.id, "Введен неправильный формат времени!", reply_markup=keyboard)
@@ -265,5 +262,4 @@ while True:
         bot.polling(True, timeout=200)
 
     except Exception as e:
-        print(e)
         time.sleep(15)
