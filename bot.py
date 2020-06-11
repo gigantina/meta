@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+244# -*- coding: utf-8 -*-
 
 import telebot
 from telebot import types
@@ -13,7 +13,7 @@ from threading import Thread
 
 TOKEN = "1114362533:AAHOd3aHgSv0A1etukA-qRc9rjrnf1ThmQg"
 
-bot = telebot.TeleBot(TOKEN, threaded=False)
+bot = telebot.TeleBot(TOKEN)
 
 
 def menu():
