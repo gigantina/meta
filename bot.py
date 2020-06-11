@@ -106,6 +106,9 @@ def diary_note(message):  # записывает в базу новую запи
         data.situation(us, 1)
         bot.send_message(us, 'Отлично! Ты молодец, а теперь опиши ситуацию, когда ты это испытал',
                          reply_markup=keyboard)
+    else:
+        bot.send_message(us,
+                         'Неправильно. Необходимо писать так: \n  /note [эмоция]. Вам нужно выбрать одну из этих эмоций: грусть, гнев, страх, радость, вина')
 
 
 @bot.message_handler(commands=['del_table_15754'])
@@ -143,7 +146,7 @@ def diary_week(message):  # присылает дневник за неделю
     check.new(message.from_user.id)
     start, end = diary.get_week_diary(message.from_user.id)
     week = diary.get_notes(start, end, message.from_user.id)
-    if week:
+    if week[0][0] != None:
         res = ''
         for day in week:
             day_of_week = day[0]
@@ -165,11 +168,12 @@ def diary_all(message):
     data.new(message.from_user.id)
     check.new(message.from_user.id)
     start, end = diary.get_week_diary(message.from_user.id)
-    week = diary.get_notes(start, end, message.from_user.id)
-    if week:
+    all_ = diary.get_notes(start, end, message.from_user.id)
+    if all_[0][0] != None:
+        print(all_)
         res = ''
         date = 1
-        for day in week:
+        for day in all_:
             day_of_week = day[0]
             bot.send_message(message.from_user.id, "Итак, твои записи за все время:", reply_markup=keyboard)
             bot.send_message(message.from_user.id, f"День {date}, {day_of_week} :", reply_markup=keyboard)
@@ -180,7 +184,7 @@ def diary_all(message):
                 string = f'Ты испытал {emotion} в данной ситуации: \n {sit} \n' + '\n'
                 res += string
     else:
-        res = 'О, ты еще не сделал записей! Ты всегда можешь это сделать командой "/note"'
+        res = 'О, ты еще не делал записей! Ты всегда можешь это сделать командой "/note"'
 
     bot.send_message(message.from_user.id, res, reply_markup=keyboard)
 
