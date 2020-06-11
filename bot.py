@@ -1,4 +1,4 @@
-244# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import telebot
 from telebot import types
@@ -170,7 +170,6 @@ def diary_all(message):
     start, end = diary.get_week_diary(message.from_user.id)
     all_ = diary.get_notes(start, end, message.from_user.id)
     if all_[0][0] != None:
-        print(all_)
         res = ''
         date = 1
         for day in all_:
