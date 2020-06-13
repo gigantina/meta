@@ -14,7 +14,7 @@ from threading import Thread
 
 TOKEN = "1114362533:AAHOd3aHgSv0A1etukA-qRc9rjrnf1ThmQg"
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(TOKEN, threaded=False)
 apihelper.proxy = {"http": "socks5://183.88.32.244:8213"}
 def menu():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
