@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import telebot
+from flask import Flask, request
 from telebot import types
-from telebot import apihelper
 import emoji as e
 import functions as f
 import data
@@ -14,8 +14,16 @@ from threading import Thread
 
 TOKEN = "1114362533:AAHOd3aHgSv0A1etukA-qRc9rjrnf1ThmQg"
 
+secret = "bb5aaeea-9e42-40c0-9582-f5bbfe5383eb"
 bot = telebot.TeleBot(TOKEN, threaded=False)
-apihelper.proxy = {"http": "socks5://183.88.32.244:8213"}
+
+bot.remove_webhook()
+time.sleep(1)
+bot.set_webhook(url="https://gigantina.pythonanywhere.com /{}".format(secret))
+
+app = Flask(__name__)
+
+
 def menu():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*[types.KeyboardButton(name) for name in ['Мем', 'Шутка']])
@@ -72,6 +80,12 @@ def planning():  # для отправки сообщений в заданно�
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
 
 t.start()
+
+
+@app.route('/{}'.format(secret), methods=["POST"])
+def webhook():
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    return "ok", 200
 
 
 @bot.message_handler(commands=['start'])
@@ -261,8 +275,4 @@ def dialog(message):  # проверки сообщения
 
 
 while True:
-    try:
-        bot.polling(True, timeout=200)
-
-    except Exception as e:
-        time.sleep(15)
+    app.run()
