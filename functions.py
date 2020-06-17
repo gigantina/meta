@@ -44,7 +44,7 @@ def plus_day(date):
 
 
 def from_date_to_string(date):
-    res = str(date.strftime('%H-%M-%S-%f'))
+    res = str(date.strftime('%H-%M-%S'))
     return res
 
 
