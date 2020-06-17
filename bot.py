@@ -15,13 +15,7 @@ from threading import Thread
 TOKEN = "1114362533:AAHOd3aHgSv0A1etukA-qRc9rjrnf1ThmQg"
 
 secret = "bb5aaeea-9e42-40c0-9582-f5bbfe5383eb"
-bot = telebot.TeleBot(TOKEN, threaded=False)
-
-bot.remove_webhook()
-time.sleep(1)
-bot.set_webhook(url="https://gigantina.pythonanywhere.com /{}".format(secret))
-
-app = Flask(__name__)
+bot = telebot.TeleBot(TOKEN)
 
 
 def menu():
@@ -52,7 +46,9 @@ def planning():  # для отправки сообщений в заданно�
             time_now = f.get_time(data.get_utc(user[0]))
             if time_now == '00-00-00':
                 data.new_day(user[0])
+                time.sleep(5)
             if time_now == '20-00-00':
+                time.sleep(5)
                 bot.send_message(user[0],
                                  'Привет! Я просто хочу напомнить. Пожалуйста, заполни дневник эмоций на сегодня)',
                                  reply_markup=keyboard)
@@ -72,6 +68,7 @@ def planning():  # для отправки сообщений в заданно�
                         bot.send_message(user[0],
                                          'Ох, как бы странно это не звучало, но меня настораживает обильное количество позитива в твоем дневнике. Знаешь, не всегда много хороших эмоций - хорошо. Если тебя беспокоит твое состояние, обратись к специалисту',
                                          reply_markup=keyboard)
+                time.sleep(5)
                 check.tuesday_set(user[0], 0)
                 check.friday_set(user[0], 0)
         time.sleep(60)
@@ -80,12 +77,6 @@ def planning():  # для отправки сообщений в заданно�
 t = Thread(target=planning)  # создает поток, который постоянно отслеживает время
 
 t.start()
-
-
-@app.route('/{}'.format(secret), methods=["POST"])
-def webhook():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    return "ok", 200
 
 
 @bot.message_handler(commands=['start'])
@@ -275,4 +266,7 @@ def dialog(message):  # проверки сообщения
 
 
 while True:
-    app.run()
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        print(e)
