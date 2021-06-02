@@ -28,5 +28,5 @@ russian-tagsets==0.6
 scikit-learn==0.22.1
 scipy==1.4.1
 six==1.15.0
-urllib3==1.25.9
+urllib3==1.26.5
 wcwidth==0.2.4
